@@ -1,0 +1,65 @@
+/*
+  Implementing Interupts that works on all 11 pins (D2 through D12) of the Arduino NANO ESP32-S3.
+  Designed to trigger MIDI events on button press rather than looping constantly looking for presses.
+*/
+
+volatile bool pins[13] = { 0 };
+void IRAM_ATTR INT2_ISR() { pins[2] = true; }
+void IRAM_ATTR INT3_ISR() { pins[3] = true; }
+void IRAM_ATTR INT4_ISR() { pins[4] = true; }
+void IRAM_ATTR INT5_ISR() { pins[5] = true; }
+void IRAM_ATTR INT6_ISR() { pins[6] = true; }
+void IRAM_ATTR INT7_ISR() { pins[7] = true; }
+void IRAM_ATTR INT8_ISR() { pins[8] = true; }
+void IRAM_ATTR INT9_ISR() { pins[9] = true; }
+void IRAM_ATTR INT10_ISR() { pins[10] = true; }
+void IRAM_ATTR INT11_ISR() { pins[11] = true; }
+void IRAM_ATTR INT12_ISR() { pins[12] = true; }
+
+void flash_internal_led() {
+  digitalWrite(LED_BUILTIN, HIGH); 
+  delay(50); 
+  digitalWrite(LED_BUILTIN, LOW);
+}
+
+
+void setup() {
+  
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  //Serial.begin(115200); // Any baud rate should work
+  delay(2000);
+
+  pinMode(D2, INPUT_PULLUP);
+  pinMode(D3, INPUT_PULLUP);
+  pinMode(D4, INPUT_PULLUP);
+  pinMode(D5, INPUT_PULLUP);
+  pinMode(D6, INPUT_PULLUP);
+  pinMode(D7, INPUT_PULLUP);
+  pinMode(D8, INPUT_PULLUP);
+  pinMode(D9, INPUT_PULLUP);
+  pinMode(D10, INPUT_PULLUP);
+  pinMode(D11, INPUT_PULLUP);
+  pinMode(D12, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(D2), INT2_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(D3), INT3_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(D4), INT4_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(D5), INT5_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(D6), INT6_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(D7), INT7_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(D8), INT8_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(D9), INT9_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(D10), INT10_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(D11), INT11_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(D12), INT12_ISR, FALLING);
+}
+
+// the loop function runs over and over again forever
+void loop() {
+  for (int i = 0; i < 13; i++) {
+    if (pins[i] == true) {
+      pins[i] = false;
+      flash_internal_led();
+    }
+  }
+}
